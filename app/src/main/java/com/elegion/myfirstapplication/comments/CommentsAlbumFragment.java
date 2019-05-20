@@ -104,23 +104,23 @@ public class CommentsAlbumFragment extends Fragment
 
         //on enter in edit text
         mPostEdit.setOnEditorActionListener(
-                new EditText.OnEditorActionListener() {
-                    @Override
-                    public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                        if (actionId == EditorInfo.IME_ACTION_SEARCH ||
-                                actionId == EditorInfo.IME_ACTION_DONE ||
-                                event != null &&
-                                        event.getAction() == KeyEvent.ACTION_DOWN &&
-                                        event.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
-                            if (event == null || !event.isShiftPressed()) {
-                                // the user is done typing.
-                                sendNewComment();
-                                return true;
-                            }
+            new EditText.OnEditorActionListener() {
+                @Override
+                public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                    if (actionId == EditorInfo.IME_ACTION_DONE ||
+                        actionId == EditorInfo.IME_ACTION_SEND ||
+                        event != null &&
+                                    event.getAction() == KeyEvent.ACTION_DOWN &&
+                                    event.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
+                        if (event == null || !event.isShiftPressed()) {
+                            // the user is done typing.
+                            sendNewComment();
+                            return true;
                         }
-                        return false;
                     }
+                    return false;
                 }
+            }
         );
     }
 
@@ -203,10 +203,12 @@ public class CommentsAlbumFragment extends Fragment
             mNoDataView.setVisibility(View.GONE);
         }
 
+        int oldCommentsCount = mCommmentsAdapter.getItemCount();
         boolean commentsAdded = mCommmentsAdapter.addData(comments, true);
+        if (oldCommentsCount == 0) return;
         if (commentsAdded) {
             showToast("Комментарии обновлены");
-        } else {
+        } else  {
             showToast("Новых комментариев нет");
         }
     }
