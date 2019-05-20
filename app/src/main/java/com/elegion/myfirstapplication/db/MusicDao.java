@@ -10,6 +10,7 @@ import android.arch.persistence.room.Update;
 import android.database.Cursor;
 
 import com.elegion.myfirstapplication.model.Album;
+import com.elegion.myfirstapplication.model.Comment;
 import com.elegion.myfirstapplication.model.Song;
 
 import java.util.List;
@@ -110,5 +111,22 @@ public interface MusicDao {
     //удалить связь альбома с песней по album id
     @Query("DELETE FROM albumsong where album_id = :albumId")
     int deleteAlbumSongsByAlbumId(int albumId);
+    //комментарии к альбомам
+
+    //вставить комментарии в базу
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    void insertComments(List<Comment> comments);
+
+    //вставить один комментарий в базу
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    void insertComment(Comment comment);
+
+    //выбрать комментарии для альбома
+    @Query("select * from comment where album_id = :albumId")
+    List<Comment> getCommentsByAlbumId(int albumId);
+
+
+    @Query("select * from comment where id = :Id")
+    Comment getCommentWithId(int Id);
 
 }

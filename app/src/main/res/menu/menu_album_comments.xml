@@ -4,7 +4,9 @@
 
     <item
         android:id="@+id/actionComments"
+        android:orderInCategory="300"
         android:title="@string/showcomments"
+        android:icon="@drawable/ic_comment"
         app:showAsAction="ifRoom"/>
 
 </menu>

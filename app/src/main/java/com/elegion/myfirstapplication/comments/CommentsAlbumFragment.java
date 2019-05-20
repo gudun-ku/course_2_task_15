@@ -22,10 +22,14 @@ import android.widget.Toast;
 import com.elegion.myfirstapplication.ApiUtils;
 import com.elegion.myfirstapplication.App;
 import com.elegion.myfirstapplication.R;
+import com.elegion.myfirstapplication.Utils;
+import com.elegion.myfirstapplication.db.MusicDao;
 import com.elegion.myfirstapplication.model.Album;
 import com.elegion.myfirstapplication.model.Comment;
 import com.elegion.myfirstapplication.model.User;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import io.reactivex.SingleObserver;
@@ -35,6 +39,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Action;
 import io.reactivex.functions.Consumer;
 
+import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 
 
@@ -155,6 +160,22 @@ public class CommentsAlbumFragment extends Fragment
         mSubscriptions.add(
                 ApiUtils.getApiService()
                 .getAlbumComments(mAlbum.getId())
+                .doOnSuccess(new Consumer<List<Comment>>() {
+                    @Override
+                    public void accept(List<Comment> comments) throws Exception {
+                        getMusicDao().insertComments(comments);
+                    }
+                })
+                .onErrorReturn(new Function<Throwable, List<Comment>>() {
+                    @Override
+                    public List<Comment> apply(Throwable throwable) throws Exception {
+                        if (ApiUtils.NETWORK_EXCEPTION.contains(throwable.getClass())) {
+                            return getMusicDao().getCommentsByAlbumId(mAlbum.getId());
+                        } else {
+                            return null;
+                        }
+                    }
+                })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnSubscribe(new Consumer<Disposable>() {
@@ -213,11 +234,27 @@ public class CommentsAlbumFragment extends Fragment
         }
     }
 
-    private void getAlbumComment(int commentId) {
+    private void getAlbumComment(final int commentId) {
 
         mSubscriptions.add(
                 ApiUtils.getApiService()
                 .getComment(commentId)
+                .doOnSuccess(new Consumer<Comment>() {
+                    @Override
+                    public void accept(Comment comment) throws Exception {
+                        getMusicDao().insertComment(comment);
+                    }
+                })
+                .onErrorReturn(new Function<Throwable, Comment>() {
+                    @Override
+                    public Comment apply(Throwable throwable) throws Exception {
+                        if (ApiUtils.NETWORK_EXCEPTION.contains(throwable.getClass())) {
+                            return getMusicDao().getCommentWithId(commentId);
+                        } else {
+                            return null;
+                        }
+                    }
+                })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnSubscribe(new Consumer<Disposable>() {
@@ -267,7 +304,10 @@ public class CommentsAlbumFragment extends Fragment
             return;
         }
 
-        Comment newComment = new Comment(mAlbum.getId(), newCommentText,loggedInUser.getName());
+        Comment newComment = new Comment( mAlbum.getId()
+                                        , newCommentText
+                                        , loggedInUser.getName()
+                                        , Utils.DateToTimestamp(new Date()));
 
 
         ApiUtils.getApiService()
@@ -330,6 +370,10 @@ public class CommentsAlbumFragment extends Fragment
     public void onDestroy() {
         mSubscriptions.clear();
         super.onDestroy();
+    }
+
+    private MusicDao getMusicDao() {
+        return ((App) getActivity().getApplication()).getDatabase().getMusicDao();
     }
 }
 

@@ -11,7 +11,7 @@ public class Utils {
         SimpleDateFormat outDate = new SimpleDateFormat("dd.MM.yyyy");
         SimpleDateFormat outTime = new SimpleDateFormat("hh:mm:ss");
 
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ss+hh:mm");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ssXXX");
         try {
             commentDate = dateFormat.parse(jsonTimeStamp);
         } catch (java.text.ParseException e) {
@@ -23,5 +23,10 @@ public class Utils {
         } else {
             return outTime.format(commentDate.getTime());
         }
+    }
+
+    public static String DateToTimestamp(Date date) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
+        return dateFormat.format(date);
     }
 }

@@ -14,14 +14,14 @@ import java.util.Date;
         @ForeignKey(entity = Album.class, parentColumns = "id", childColumns = "album_id")})
 public class Comment implements Serializable {
 
-    @PrimaryKey
+    @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "id")
     @SerializedName("id")
     private int mId;
 
     @ColumnInfo(name = "album_id")
     @SerializedName("album_id")
-    private int albumId;
+    private int mAlbumId;
 
     @ColumnInfo(name = "text")
     @SerializedName("text")
@@ -35,10 +35,11 @@ public class Comment implements Serializable {
     @SerializedName("timestamp")
     private String mTimestamp;
 
-    public Comment(int albumId, String text, String author) {
-        this.albumId = albumId;
+    public Comment(int albumId, String text, String author, String timestamp) {
+        this.mAlbumId = albumId;
         this.mText = text;
         this.mAuthor = author;
+        this.mTimestamp = timestamp;
     }
 
     public int getId() {
@@ -46,7 +47,7 @@ public class Comment implements Serializable {
     }
 
     public int getAlbumId() {
-        return albumId;
+        return mAlbumId;
     }
 
     public String getText() {
@@ -59,5 +60,25 @@ public class Comment implements Serializable {
 
     public String getTimestamp() {
         return mTimestamp;
+    }
+
+    public void setId(int id) {
+        this.mId = id;
+    }
+
+    public void setAlbumId(int albumId) {
+        this.mAlbumId = albumId;
+    }
+
+    public void setText(String text) {
+        this.mText = text;
+    }
+
+    public void setAuthor(String author) {
+        this.mAuthor = author;
+    }
+
+    public void setTimestamp(String timestamp) {
+        this.mTimestamp = timestamp;
     }
 }
