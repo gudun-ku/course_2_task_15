@@ -47,9 +47,9 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <EditText
+        <com.elegion.myfirstapplication.components.ActionEditText
             android:id="@+id/etComment"
-            android:inputType="textMultiLine"
+            android:inputType="textAutoCorrect|textCapSentences|textMultiLine"
             android:lines="4"
             android:gravity="top|left"
             android:maxLines="10"
